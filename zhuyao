@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Üdvözlünk a 8/B osztály 2025-ös ballagási partiján! Küldj üzenetet és szavazz a helyszínre! Időpont: 2025. június 21., déli 12:00, részletek egyeztetés alatt.">
+    <meta name="keywords" content="ballagás, 2025, 8/B, Szervatius Jenő, party, szavazás">
+    <title>Ballagás Party 2025 - 8/B</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+        nav {
+            background-color: #e0e0e0;
+            padding: 0.5em;
+            text-align: center;
+        }
+        nav a {
+            color: #333;
+            text-decoration: none;
+            margin: 0 1em;
+            font-weight: bold;
+        }
+        nav a:hover {
+            color: #45a049;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1em;
+        }
+        section {
+            margin: 2em 0;
+            padding: 1em;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        input, textarea, button, select {
+            width: 100%;
+            padding: 0.5em;
+            margin: 0.5em 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            background: #eee;
+            padding: 0.5em;
+            margin: 0.3em 0;
+            border-radius: 4px;
+        }
+        .error {
+            color: #d32f2f;
+            font-size: 0.9em;
+            display: none;
+        }
+        .vote-section {
+            margin-top: 1em;
+        }
+        footer {
+            text-align: center;
+            padding: 1em;
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 2em;
+        }
+        @media (max-width: 600px) {
+            nav a {
+                margin: 0 0.5em;
+                display: block;
+                padding: 0.5em 0;
+            }
+            .container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Ballagás Party 2025 - 8/B</h1>
+        <p>Ünnepeljük meg együtt az általános iskola befejezését!</p>
+    </header>
+
+    <nav>
+        <a href="#program">Program</a>
+        <a href="#jelentkezes">Jelentkezés</a>
+        <a href="#uzenetek">Üzenetek</a>
+        <a href="#szavazas">Szavazás</a>
+        <a href="#kapcsolat">Kapcsolat</a>
+    </nav>
+
+    <div class="container" role="main">
+        <section id="program">
+            <h2>Program</h2>
+            <p>Színes programokkal, játékokkal, zenével és finom ételekkel várunk benneteket!</p>
+            <p><strong>Időpont:</strong> 2025. június 21., déli 12:00. A konkrét időpont és részletek egyeztetés alatt állnak. A parti nem tart ki estig.</p>
+        </section>
+
+        <section id="jelentkezes">
+            <h2>Jelentkezés</h2>
+            <input type="text" id="nameInput" placeholder="Írd be a neved" aria-label="Név bevitel">
+            <button onclick="addName()">Jelentkezem!</button>
+            <div id="nameError" class="error">Kérlek, adj meg egy nevet (max. 50 karakter)!</div>
+            <ul id="nameList" aria-live="polite"></ul>
+        </section>
+
+        <section id="uzenetek">
+            <h2>Üzenetek</h2>
+            <textarea id="commentInput" rows="3" placeholder="Írd ide az ötleted a helyszínről..." aria-label="Üzenet bevitel" maxlength="100"></textarea>
+            <button onclick="addComment()">Küldés</button>
+            <div id="commentError" class="error">Kérlek, adj meg egy üzenetet (max. 100 karakter)!</div>
+            <ul id="commentList" aria-live="polite"></ul>
+        </section>
+
+        <section id="szavazas">
+            <h2>Szavazás: Hol legyen a buli?</h2>
+            <p>Válaszd ki az általad legjobbnak tartott ötletet, és szavazz rá! (Mindenki csak egyszer szavazhat egy ötletre.)</p>
+            <div id="voteOptions"></div>
+            <ul id="voteResults" aria-live="polite"></ul>
+        </section>
+
+        <section id="kapcsolat">
+            <h2>Kapcsolat</h2>
+            <p>Ha kérdésed van, írj nekünk: <a href="mailto:jundo00905@gmail.com">jundo00905@gmail.com</a></p>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2025 8/B Osztály. Minden jog fenntartva.</p>
+    </footer>
+
+    <script>
+        // Load data from localStorage
+        let nameListData = JSON.parse(localStorage.getItem('nameList')) || [];
+        let commentListData = JSON.parse(localStorage.getItem('commentList')) || [];
+        let voteCounts = JSON.parse(localStorage.getItem('voteCounts')) || {};
+        let userVotes = JSON.parse(localStorage.getItem('userVotes')) || {}; // Track user votes
+
+        const nameList = document.getElementById("nameList");
+        const commentList = document.getElementById("commentList");
+        const voteOptions = document.getElementById("voteOptions");
+        const voteResults = document.getElementById("voteResults");
+        const nameInput = document.getElementById("nameInput");
+        const commentInput = document.getElementById("commentInput");
+        const nameError = document.getElementById("nameError");
+        const commentError = document.getElementById("commentError");
+
+        // Load saved data
+        nameListData.forEach(name => {
+            const li = document.createElement("li");
+            li.textContent = name;
+            nameList.appendChild(li);
+        });
+        updateComments();
+        updateVotes();
+
+        function addName() {
+            const name = nameInput.value.trim();
+            if (name && name.length <= 50) {
+                const li = document.createElement("li");
+                li.textContent = name;
+                nameList.appendChild(li);
+                nameListData.push(name);
+                localStorage.setItem('nameList', JSON.stringify(nameListData));
+                nameInput.value = "";
+                nameError.style.display = "none";
+            } else {
+                nameError.style.display = "block";
+            }
+        }
+
+        function addComment() {
+            const comment = commentInput.value.trim();
+            if (comment && comment.length <= 100) {
+                const li = document.createElement("li");
+                li.textContent = comment;
+                commentList.appendChild(li);
+                commentListData.push(comment);
+                localStorage.setItem('commentList', JSON.stringify(commentListData));
+                commentInput.value = "";
+                commentError.style.display = "none";
+                updateComments();
+            } else {
+                commentError.style.display = "block";
+            }
+        }
+
+        function updateComments() {
+            commentList.innerHTML = "";
+            commentListData.forEach(comment => {
+                const li = document.createElement("li");
+                li.textContent = comment;
+                commentList.appendChild(li);
+            });
+            updateVoteOptions();
+        }
+
+        function updateVoteOptions() {
+            voteOptions.innerHTML = "";
+            commentListData.forEach((comment, index) => {
+                if (!voteCounts[comment]) voteCounts[comment] = 0;
+                const div = document.createElement("div");
+                div.className = "vote-section";
+                const button = document.createElement("button");
+                button.textContent = `Szavazok "${comment}"-ra`;
+                button.onclick = () => vote(comment);
+                div.appendChild(button);
+                voteOptions.appendChild(div);
+            });
+        }
+
+        function vote(comment) {
+            const userId = getUserId(); // Simple user ID based on localStorage
+            if (!userVotes[userId] || !userVotes[userId][comment]) {
+                voteCounts[comment]++;
+                if (!userVotes[userId]) userVotes[userId] = {};
+                userVotes[userId][comment] = true;
+                localStorage.setItem('voteCounts', JSON.stringify(voteCounts));
+                localStorage.setItem('userVotes', JSON.stringify(userVotes));
+                updateVotes();
+            } else {
+                alert("Már szavaztál erre az ötletre!");
+            }
+        }
+
+        function updateVotes() {
+            voteResults.innerHTML = "";
+            for (let comment in voteCounts) {
+                const li = document.createElement("li");
+                li.textContent = `${comment}: ${voteCounts[comment]} szavazat`;
+                voteResults.appendChild(li);
+            }
+        }
+
+        function getUserId() {
+            let userId = localStorage.getItem('userId');
+            if (!userId) {
+                userId = Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('userId', userId);
+            }
+            return userId;
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
